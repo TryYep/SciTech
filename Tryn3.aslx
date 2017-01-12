@@ -1,0 +1,1611 @@
+<!--Saved by Quest 5.6.5783.24153-->
+<asl version="550">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <include ref="ScopeLib.xml" />
+  <include ref="LevelLib.xml" />
+  <include ref="CombatLib.aslx" />
+  <include ref="ConvLib.aslx" />
+  <game name="Tryn3">
+    <gameid>7a63eb4b-187e-4670-a174-9e4a6024d190</gameid>
+    <version>1.0</version>
+    <firstpublished>2016</firstpublished>
+    <gridmap />
+    <feature_pictureframe />
+    <showhealth />
+    <feature_limitinventory />
+    <feature_lightdark />
+    <attr name="feature_asktell" type="boolean">false</attr>
+    <author>Trynidy Williams</author>
+    <autodescription type="boolean">false</autodescription>
+    <setcustomwidth type="boolean">false</setcustomwidth>
+    <changeroom_newline />
+    <echohyperlinks type="boolean">false</echohyperlinks>
+    <setcustompadding type="boolean">false</setcustompadding>
+    <custompaddingtop type="int">4</custompaddingtop>
+    <custompaddingbottom type="int">0</custompaddingbottom>
+    <custompaddingleft type="int">0</custompaddingleft>
+    <custompaddingright type="int">0</custompaddingright>
+    <cover>Untitled-2.jpg</cover>
+    <pov type="object">player</pov>
+    <start type="script">
+      CombatInitialise (true, true)
+    </start>
+    <onhealthzero type="script">
+      finish
+    </onhealthzero>
+    <roomenter type="script">
+      if (GetBoolean(Dovahi, "Following")) {
+        Dovahi.parent = player.parent
+        msg ("Dovahi is following you now.")
+      }
+    </roomenter>
+  </game>
+  <command name="status">
+    <pattern>status</pattern>
+    <script>
+      if (HasString(game.pov, "alias")) {
+        msg ("Name: " + game.pov.alias)
+      }
+      foreach (att, game.pov.attlist) {
+        msg (CapFirst(att) + ": " + GetInt(game.pov, att))
+      }
+      msg ("Health:" + game.pov.health)
+      msg ("Defence: " + GetDefence())
+      if (not (game.pov.armourobject = null)) {
+        msg ("Armour: " + GetDisplayAlias (game.pov.armourobject))
+        if (ArmourTooHeavy(game.pov.armour)) {
+          msg ("... The armour is too heavy for you to fight effectively.")
+        }
+      }
+      if (not (game.pov.equipped = null)) {
+        msg ("Weapon: " + GetDisplayAlias (game.pov.equipped) + " " + GetWeaponStats (game.pov.equipped))
+      }
+      msg ("Gold: " + player.gold + 5)
+    </script>
+  </command>
+  <object name="Opening Room">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[Welcome, {object:player}! I'm Trynidy, the game designer. This is the start room. Go onto whichever world you decide. There are three; cyberpunk, mythical medieval, and a apocalyptic future. Go on and decide. You can skip to other worlds from time to time so nothing is perminent. Good luck!<br/><br/><b>Go south for tutorial! Press the down key on the compass or type: <u>Go South!</u></b><br/><br/>Continue on if you know how to play.<br/><br/>Ahead is the <i>future of the human race</i>. The world is dying and so are we. You can save the world or doom it.<br/><br/>To the left is a world <i>filled with creatures that eat humans</i>. They can attack during the day or night. Beware.<br/><br/>To the right is a <i>medival world</i> where the myths we fear are real. Good luck at surviving.<br/><br/>]]></description>
+    <descprefix>You are in the </descprefix>
+    <objectslistprefix type="string"></objectslistprefix>
+    <object name="player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+      <inherit name="talkingchar" />
+      <maxobjects type="int">15</maxobjects>
+      <containermaxobjects>You're too fat</containermaxobjects>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <gold type="int">20</gold>
+    </object>
+    <exit alias="north" to="Future">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="west" to="Cyberpunk">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="east" to="Mythical">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit alias="south" to="Tutorial">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <object name="Future">
+    <inherit name="editor_room" />
+    <descprefix>You are in the </descprefix>
+    <description><![CDATA[<br/>This is the future. It's 2198 and half of the human race is under the last ocean left on Earth. They've forsaken their kin and are attempting to fix the world. Those on land are trapped in a single city and smaller towns around it. There is little to no animals left. Trees and plants are only on protected, owned lands. These lands are protected with electric fences and gun fire. Will you save the world or destory it?<br/><br/>Move north to begin. There will be no way back for sometime so choose carefully.]]></description>
+    <attr name="grid_label">Future</attr>
+    <exit alias="south" to="Opening Room">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="southwest" to="Cyberpunk">
+      <inherit name="southwestdirection" />
+    </exit>
+    <exit alias="north" to="f_Wasteland">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="southeast" to="Mythical">
+      <inherit name="southeastdirection" />
+    </exit>
+  </object>
+  <object name="Cyberpunk">
+    <inherit name="editor_room" />
+    <description><![CDATA[<br/>In this world there is creatures that eat humans. They look and talk like us. They eat during the day and during the night;the light cannot protect you here. Will you doom these creautres for eating? Or will you help them since the only thing they can eat is humans? It is up to you to side with the side you feel is morally right. Good luck.<br/><br/>Move east to begin. There will be no way back for sometime so choose carefully.]]></description>
+    <attr name="grid_label">Cyberpunk</attr>
+    <attr name="grid_borderwidth" type="int">1</attr>
+    <exit alias="east" to="Opening Room">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit alias="northeast" to="Future">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="west" to="C_city_1">
+      <inherit name="westdirection" />
+    </exit>
+  </object>
+  <object name="Mythical">
+    <inherit name="editor_room" />
+    <description><![CDATA[<br/>This is a mideval world. Myths like mermaids and dragons ae real here. You have only the simplest tools and medication at your disposal. Go speak to the King whenever you desire to start your quest. Good luck! <br/><br/>Move east to begin. There will be no way back for sometime so choose carefully.]]></description>
+    <attr name="grid_label">Mythical</attr>
+    <exit alias="west" to="Opening Room">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="northwest" to="Future">
+      <inherit name="northwestdirection" />
+    </exit>
+    <exit alias="east" to="m_Forest">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="f_Wasteland">
+    <inherit name="editor_room" />
+    <alias>Wasteland</alias>
+    <description><![CDATA[A boring wasteland. A small shack is at your right. A looming city far in the distance north. More wasteland to the left.<br/><br/>It's strangely cold and windy. No trees are there to block the wind. No animals or animal tracks are seen on the dirty sand. It looks almost like a more desserted version of the Wastes of Fallout: New Vegas.]]></description>
+    <descprefix>You are in the</descprefix>
+    <attr name="grid_label">Wasteland</attr>
+    <firstenter type="script">
+    </firstenter>
+    <exit alias="east" to="f_Shack">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit alias="west" to="f_Nothing">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="north" to="f_Near city">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="f_Shack">
+    <inherit name="editor_room" />
+    <descprefix>You are in a small </descprefix>
+    <description>A small shack, it's full of sand and has a small bed in the corner. It's shealther from the outside at least. Looks as though no one is there considering the deterrioration of the bed. It still looks better than the sand outside though. Nothing else within this shake.</description>
+    <alias>Shack</alias>
+    <attr name="grid_label">Shack</attr>
+    <dark type="boolean">false</dark>
+    <object name="Bed">
+      <inherit name="editor_object" />
+      <look>A towel thrown into the corner to make a sort of bed. Looks cozier than outside. Maybe a small nap may help.</look>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <lie type="script">
+        IncreaseHealth (10)
+      </lie>
+    </object>
+    <exit alias="west" to="f_Wasteland">
+      <inherit name="westdirection" />
+    </exit>
+  </object>
+  <object name="f_Near city">
+    <inherit name="editor_room" />
+    <alias>Near City</alias>
+    <attr name="grid_label">Waste</attr>
+    <description><![CDATA[You are getting closer to the city you see in the distance. It's large and dark. Nothing else is for miles. No water, no break in the sun, <i>nothing</i>.  The city looks filthy and covered in a sort of tarp over the tops of buildings that stretch up to the sky. ]]></description>
+    <exit alias="south" to="f_Wasteland">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="north" to="f_City 1">
+      <inherit name="northdirection" />
+    </exit>
+    <object name="Mutated Rat">
+      <inherit name="editor_object" />
+      <inherit name="monster" />
+      <inherit name="namedmale" />
+      <hurtbyweapon type="string"></hurtbyweapon>
+      <lookwhendead>It's mutated and rotten. Gross!</lookwhendead>
+      <hitpoints type="int">2</hitpoints>
+      <attackonsight />
+      <usedefaultprefix />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Attack</value>
+      </displayverbs>
+      <attack type="script">
+        this.temp_db = 0
+        this.temp_ob_now = 0
+        this.temp_ob_next = 0
+        this.temp_damage = 0
+        this.temp_desc = "You swing your"
+        do (this, "doattack")
+        DecreaseHealth (5)
+      </attack>
+    </object>
+  </object>
+  <object name="f_Nothing">
+    <inherit name="editor_room" />
+    <usedefaultprefix />
+    <description>There's only sand dunes here. One scraggly, black tree is left. There's something at its base.</description>
+    <alias>Nothing</alias>
+    <attr name="grid_label" type="string"></attr>
+    <beforeenter type="script">
+    </beforeenter>
+    <onexit type="script">
+    </onexit>
+    <object name="Pistol">
+      <inherit name="editor_object" />
+      <inherit name="weapon" />
+      <damagedicenumber type="int">5</damagedicenumber>
+      <nonweapon />
+      <look>A starter pistol so you don't die. (Hint: You need it dear.)</look>
+      <feature_usegive />
+      <attackbonus type="int">3</attackbonus>
+    </object>
+    <exit alias="east" to="f_Wasteland">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="Mutated Rabbit">
+      <inherit name="editor_object" />
+      <look>It twitches and makes broken noises as you approch.</look>
+      <take />
+      <takemsg>You grab the rabbit and it squeals then flops over. It looks dead.</takemsg>
+      <feature_usegive />
+      <use />
+      <ontake type="script">
+      </ontake>
+      <selfuseon type="scriptdictionary" />
+    </object>
+  </object>
+  <object name="m_Forest">
+    <inherit name="editor_room" />
+    <alias>Forest</alias>
+    <description><![CDATA[A large, beautfiul forest. You're now in the past.<br/><br/>Pick up the items here and go forth. Do as you please.]]></description>
+    <attr name="grid_label">Forest</attr>
+    <firstenter type="script">
+      MoveObjectHere (Werewolf)
+    </firstenter>
+    <object name="Wooden Bow">
+      <inherit name="editor_object" />
+      <inherit name="weapon" />
+      <look>Standard wooden bow. Aka Starter bow</look>
+      <listalias>Wooden Bow</listalias>
+      <take />
+      <feature_usegive />
+      <use />
+      <attackbonus type="int">3</attackbonus>
+      <damagebonus type="int">3</damagebonus>
+      <damagedicenumber type="int">5</damagedicenumber>
+      <twohanded />
+      <nonweapon />
+    </object>
+    <object name="Werewolf">
+      <inherit name="editor_object" />
+      <inherit name="female" />
+      <inherit name="monster" />
+      <level type="int">1</level>
+      <attackonsight />
+      <guarding />
+      <defence type="int">1</defence>
+      <armour type="int">1</armour>
+      <attackbonus type="int">1</attackbonus>
+      <damagebonus type="int">1</damagebonus>
+      <drop />
+      <hitpoints type="int">1</hitpoints>
+      <attack type="script">
+        this.temp_db = 0
+        this.temp_ob_now = 0
+        this.temp_ob_next = 0
+        this.temp_damage = 0
+        this.temp_desc = "You swing your"
+        do (this, "doattack")
+        DecreaseHealth (5)
+      </attack>
+      <search type="script">
+        if (not this.dead) {
+          msg ("You can only search a monster once it is dead.")
+        }
+        else if (this.searched) {
+          msg ("You search it, but find nothing more.")
+        }
+        else {
+          this.searched = true
+          SearchBody (this)
+        }
+      </search>
+      <ondrop type="script">
+        if (game.pov.equipped = this) {
+          game.pov.equipped = fists
+          this.inventoryverbs = Split ("Look at;Drop;Equip;Sell", ";")
+          UpdateWeapon
+        }
+      </ondrop>
+    </object>
+    <exit alias="north" to="m_forest left">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="east" to="m_path">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="f_City 1">
+    <inherit name="editor_room" />
+    <alias>City</alias>
+    <description><![CDATA[The lane you walk is dark. A large plume of smoke sits over the skyline. As you decend into the darkness, more and more small shacks loom in the darkness. The people you see look like shadows. They're small and thin, sickly from starvation. They hide in the shadows, filthy. You cannot feel remorse for them however. They have chosen to destory the world providing them with nurishment.<br/><br/>This is their doing.]]></description>
+    <attr name="grid_length" type="int">3</attr>
+    <attr name="grid_label">City Block 1</attr>
+    <exit alias="south" to="f_Near city">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="west" to="f_Inn">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="north" to="f_City2">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="f_Inn">
+    <inherit name="editor_room" />
+    <inherit name="shop_location" />
+    <alias>Nightingale Inn</alias>
+    <description>A small, beautiful inn. A few people sit in the firelight and rest. Theres a room for rent for 5 gold a night. </description>
+    <buys type="boolean">false</buys>
+    <attr name="grid_label">Inn</attr>
+    <shopstock type="object">f_InnStockroom</shopstock>
+    <enter type="script">
+    </enter>
+    <beforefirstenter type="script">
+    </beforefirstenter>
+    <exit alias="east" to="f_City 1">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="Abriana The Executioner">
+      <inherit name="editor_object" />
+      <inherit name="namedmale" />
+      <inherit name="talkingchar" />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <hideafter type="boolean">false</hideafter>
+      <usedefaultprefix />
+      <feature_usegive />
+      <look type="script">
+        msg ("Abriana smacks you")
+        DecreaseHealth (5)
+      </look>
+      <askdefault type="script">
+        msg ("I dunno")
+      </askdefault>
+      <greet type="script">
+        msg ("\"Welcome! Rooms are 5 goldpieces and I sell goods!\"")
+      </greet>
+      <talk type="script">
+        msg ("Wanna talk?")
+      </talk>
+      <ask type="scriptdictionary" />
+      <tell type="scriptdictionary" />
+      <useon type="scriptdictionary">
+        <item key="Mutated Rabbit">
+          msg ("Abriana sadly sighs. \"My dogs were killed due to starvation. Poor things. I know the planet is dying, but I do not know how to help.\"")
+          msg ("\"You can go to the castle. I'll meet you there.\"")
+          msg ("\"Thank you traveler.\"")
+          AddToInventory (Foods)
+          AddToInventory (Food)
+        </item>
+      </useon>
+      <object name="abriana_room">
+        <inherit name="editor_object" />
+        <inherit name="topic" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Buying a room</alias>
+        <nowshow type="list" />
+        <talk type="script">
+          msg ("\"You'd like a room? It's 5 gold.\"")
+          player.gold = player.gold + -5
+          msg ("\"Go on to the back and sleep. There's food in the back. Come to me if you need me pup.\"")
+          UnlockExit (InnRoom2)
+        </talk>
+      </object>
+      <object name="abriana_buy">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Buying supplies</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          msg ("\"You wanna switch supplies? I sell wares.\"")
+          Ask ("\"I have some food. 5 gold per. Food is scarce. Deal with it. Want some?\"") {
+            msg ("\"Here ya go!\"")
+            AddToInventory (Foods)
+            player.gold = player.gold + -5
+          }
+          Ask ("\"I also have a small black ring. It's just something I found. 2 gold for it. Want it?\"") {
+            msg ("\"Here ya go!\"")
+            AddToInventory (Black Ring)
+            player.gold = player.gold + -2
+          }
+        </talk>
+      </object>
+      <object name="Black Ring">
+        <inherit name="editor_object" />
+        <take />
+        <feature_usegive />
+        <use />
+        <giveto type="string"></giveto>
+      </object>
+    </object>
+    <exit name="InnRoom2" alias="west" to="f_Bedroom">
+      <inherit name="westdirection" />
+      <locked />
+    </exit>
+  </object>
+  <object name="f_City2">
+    <inherit name="editor_room" />
+    <alias>City</alias>
+    <attr name="grid_label">City Block 2</attr>
+    <attr name="grid_width" type="int">1</attr>
+    <attr name="grid_length" type="int">2</attr>
+    <exit alias="south" to="f_City 1">
+      <inherit name="southdirection" />
+    </exit>
+    <exit name="CastleGate" alias="north" to="f_Castle">
+      <inherit name="northdirection" />
+      <locked />
+    </exit>
+    <object name="Gate Guard">
+      <inherit name="editor_object" />
+      <inherit name="namedmale" />
+      <inherit name="talkingchar" />
+      <guarding type="boolean">false</guarding>
+      <movetype>Forgetful</movetype>
+      <look>A scary gate guard who looks upset at you.</look>
+      <hideafter type="boolean">false</hideafter>
+      <feature_usegive />
+      <greet type="script">
+        msg ("Hault! No one past!")
+      </greet>
+      <talk type="script">
+        msg ("I will not let you past. I need to afford a ring for my wife. Overtime should do it.")
+      </talk>
+      <useon type="scriptdictionary">
+        <item key="Black Ring">
+          if (Got(Black Ring)) {
+            UnlockExit (CastleGate)
+            msg ("Thank you. Go on. The King and Queen await you. They may kill you though.")
+          }
+          else {
+            msg ("Go!")
+          }
+        </item>
+        <item key="Mutated Rabbit">
+          msg ("The guard watches. \"I know things are dying, but I thought the King and Queen would solve it...\"")
+          msg ("\"If you wanna join the fight, then head into the Castle.\"")
+        </item>
+      </useon>
+      <object name="guard_gate">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Gate</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          msg ("I will not let you past. I need to afford a ring for my wife. Overtime should do it.")
+        </talk>
+      </object>
+    </object>
+  </object>
+  <object name="f_Castle">
+    <inherit name="editor_room" />
+    <inherit name="gridborder_path_s" />
+    <description>The throne room.</description>
+    <attr name="grid_label">Castle</attr>
+    <alias>Castle</alias>
+    <firstenter type="script">
+      msg ("The room is funished in pelts and horns of long dead animal types. Two women sit on a large thrown, shaped more like a couch. They lay together. Both had bright silver hair. One seemed to be sleeping in the pile of furrs and soft things they had gathered upon their thrown. One, the awake one, had a gold crown. The one alseep seemed to dawn a silver crown to match her hair.")
+    </firstenter>
+    <object name="Queen">
+      <inherit name="editor_object" />
+      <inherit name="namedfemale" />
+      <inherit name="monsterarcher" />
+      <inherit name="switchable" />
+      <usedefaultprefix />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <lookwhendead>A crown, now stained red, lays beside her.</lookwhendead>
+      <level type="int">1</level>
+      <hitpoints type="int">0</hitpoints>
+      <feature_switchable />
+      <switchoffmsg>The queen is alseep</switchoffmsg>
+      <switchonmsg>The queen is awake</switchonmsg>
+      <nonweapon />
+      <attackasgroup type="boolean">false</attackasgroup>
+      <look type="script">
+        if (IsSwitchedOn(Queen)) {
+          msg ("She watches you carefully.")
+        }
+        else {
+          msg ("She sleeps peacefully beside her King. The thrown looks warm and cozy.")
+        }
+      </look>
+      <attack type="script">
+        this.temp_db = 0
+        this.temp_ob_now = 0
+        this.temp_ob_next = 0
+        this.temp_damage = 0
+        this.temp_desc = "You swing your"
+        do (this, "doattack")
+        DecreaseHealth (10)
+        if () {
+        }
+      </attack>
+      <onswitchon type="script">
+        msg ("She watches you and growls softly. Her crimson eyes looking terrified.")
+      </onswitchon>
+    </object>
+    <exit alias="south" to="f_City2">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="Throne" to="f_Castle">
+      <inherit name="northdirection" />
+      <lookonly />
+      <look>A large thrown with two women on it. Its made with animal skins from long dead spieces. </look>
+    </exit>
+    <exit alias="up" to="f_Tower">
+      <inherit name="updirection" />
+    </exit>
+    <object name="King">
+      <inherit name="editor_object" />
+      <inherit name="namedfemale" />
+      <inherit name="talkingchar" />
+      <inherit name="monsterarcher" />
+      <usedefaultprefix />
+      <look><![CDATA[She is the king. She has a gold crown and green eyes. She looks <i>very</i> mad.]]></look>
+      <level type="int">2</level>
+      <hitpoints type="int">1</hitpoints>
+      <attackasgroup />
+      <nonweapon />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Attack</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <feature_usegive />
+      <death>You rule as king from now on. Will the world flurish or die under your mighty rule? You deicde.</death>
+      <greet type="script">
+        msg ("I demand to know why you are here peasant!")
+      </greet>
+      <attack type="script">
+        this.temp_db = 0
+        this.temp_ob_now = 0
+        this.temp_ob_next = 0
+        this.temp_damage = 0
+        this.temp_desc = "You swing your"
+        do (this, "doattack")
+        DecreaseHealth (15)
+      </attack>
+      <useanything type="script">
+        msg ("You're dumb.")
+      </useanything>
+      <useon type="scriptdictionary">
+        <item key="Mutated Rabbit">
+          msg ("\"What is this?!\"")
+          msg ("\"A mutated rabbit King. We need to fix things.\"")
+          msg ("The King looks at the Queen, who is now awake. They lock eyes.")
+          if (random chance (50)) {
+            msg ("\"Fine Fine, I will happily fix whatever I can to fix everything. But we must be cautious. I'd love to help. We will all partious otherwise. \"")
+            finish
+          }
+          else {
+            msg ("\"You are a fool! I refuse! We will all die if we cannot hunt. The soil is too dry to grow foods. Our brothern left us for a reason. We will die!\"")
+            wait {
+              msg ("Go away. We will not change our policies. I'd rather die then allow you to order me!")
+            }
+          }
+        </item>
+      </useon>
+      <object name="king_rawr">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>What's happening?</alias>
+        <talk type="script">
+          msg ("\"What do you mean?\"")
+          msg ("You tell her you want to help with the world.")
+          msg ("\"Then go see the wizard upstairs. You're disruptioning my love's sleep.\"")
+          SetObjectFlagOn (Queen, "On")
+        </talk>
+      </object>
+    </object>
+  </object>
+  <object name="f_Tower">
+    <inherit name="editor_room" />
+    <inherit name="gridborder_path_e" />
+    <description>There's a tower with a mighty wizard within. He's crazy, but amazingly smart.</description>
+    <attr name="grid_label">Tower</attr>
+    <alias>Tower</alias>
+    <exit alias="down" to="f_Castle">
+      <inherit name="downdirection" />
+    </exit>
+    <object name="Keaton the Great Crazy One">
+      <inherit name="editor_object" />
+      <inherit name="namedmale" />
+      <inherit name="talkingchar" />
+      <usedefaultprefix />
+      <look>Scrappy man who looks like Rasputin.</look>
+      <drop type="boolean">false</drop>
+      <feature_usegive />
+      <greet type="script">
+      </greet>
+      <give type="scriptdictionary" />
+      <useon type="scriptdictionary">
+        <item key="Mutated Rabbit">
+          if (Got(Mutated Rabbit)) {
+            msg ("\"YOU HAVE IT!!\"")
+            msg ("\"You need to show this rabbit to the people. Show the queen and king. They know all is not well. The people feel it. They will demand that things be righted. Now go.\"")
+          }
+          else {
+            msg ("\"Go away!\"")
+          }
+        </item>
+      </useon>
+      <object name="keaton_spooked">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Poke him and speak to him</alias>
+        <talk type="script"><![CDATA[
+          msg ("You poke the crazy man and and screams a squeal so loud it gives you a headache.")
+          msg ("The man looks at you. \"wHat ArE YoU doINg?\"")
+          msg ("You answer and tell him that the King sent you up.<br/>Keaton looks at you. \"So you want to help... Then go get me a mutated rabbit. I need to see it to perfect my idea. Go on now. Bye.\"<br/>He goes off to dork around more.")
+        ]]></talk>
+      </object>
+    </object>
+  </object>
+  <object name="f_InnStockroom">
+    <inherit name="editor_room" />
+    <inherit name="shop_location" />
+    <buys type="boolean">false</buys>
+    <shopstock type="object">f_Inn</shopstock>
+    <object name="Foods">
+      <inherit name="editor_object" />
+      <inherit name="edible" />
+      <inherit name="merchandise" />
+      <take />
+      <feature_usegive />
+      <feature_edible />
+      <use />
+      <eathealth type="int">10</eathealth>
+      <price type="int">10</price>
+      <givesingle />
+    </object>
+  </object>
+  <object name="f_Bedroom">
+    <inherit name="editor_room" />
+    <inherit name="gridborder_path_e" />
+    <description>A simple bed and table. The bed looks cozy and nice. A little morsel of food is on the table.</description>
+    <alias>Bedroom</alias>
+    <exit alias="east" to="f_Inn">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="Inn_bed">
+      <inherit name="editor_object" />
+      <alias>Bed</alias>
+      <scenery />
+      <lie type="script">
+        msg ("You sleep for a few hours.")
+        IncreaseHealth (10)
+      </lie>
+    </object>
+    <object name="Food">
+      <inherit name="editor_object" />
+      <attr name="feature_usegive" type="boolean">false</attr>
+      <use type="boolean">false</use>
+      <eat type="script">
+        IncreaseHealth (5)
+      </eat>
+    </object>
+  </object>
+  <object name="Tutorial">
+    <inherit name="editor_room" />
+    <description type="script">
+      msg ("Hello! Here's how to play!")
+      msg ("Click on anything blue in the text area to play with it.")
+      msg ("Click in the status, inventory, and compass menus to also activate objects and move the player.")
+      msg ("You can also just type the commands if you want")
+      msg ("Look at the cat to test it out. ")
+      MoveObject (Cat, Tutorial)
+      msg ("Move down to move on and continue the tutorial")
+    </description>
+    <exit alias="north" to="Opening Room">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="south" to="Tutorial2">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="Cat">
+      <inherit name="editor_object" />
+      <look>"Meow~"</look>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+    </object>
+  </object>
+  <object name="Broadsword">
+    <inherit name="editor_object" />
+    <inherit name="weapon" />
+    <attr name="feature_usegive" type="boolean">false</attr>
+    <twohanded />
+  </object>
+  <object name="Cow">
+    <inherit name="editor_object" />
+    <inherit name="monster" />
+    <hitpoints type="int">5</hitpoints>
+    <nonweapon />
+    <attack type="script">
+      this.temp_db = 0
+      this.temp_ob_now = 0
+      this.temp_ob_next = 0
+      this.temp_damage = 0
+      this.temp_desc = "You swing your"
+      do (this, "doattack")
+      DecreaseHealth (1)
+    </attack>
+  </object>
+  <object name="Tutorial2">
+    <inherit name="editor_room" />
+    <alias>Tutorial</alias>
+    <description type="script">
+      msg ("Now fight the cow!")
+      msg ("Make sure you can see the broadsword is in the status menu as your weapon")
+      msg ("Grab and equip the broadsword and kill the cow. ")
+      msg ("Have fun!")
+      MoveObject (Broadsword, Tutorial2)
+      MoveObject (Cow, Tutorial2)
+    </description>
+    <onexit type="script">
+      MoveObject (Broadsword, Tutorial2)
+    </onexit>
+    <exit alias="north" to="Tutorial">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="m_forest left">
+    <inherit name="editor_room" />
+    <alias>Forest</alias>
+    <description><![CDATA[The mountains are tall and beautiful in the distance. The forest stops at the base of the mountains. A large cave is within the mountain. Are you brave enough to enter? Only move forword if you have a lightsource, or you'll be <i>trapped within the darkness forever.</i>]]></description>
+    <attr name="grid_label">Forest</attr>
+    <exit alias="south" to="m_Forest">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="Rabbit">
+      <inherit name="editor_object" />
+      <inherit name="monster" />
+      <attr name="feature_usegive" type="boolean">false</attr>
+      <look>Cute white bunny</look>
+      <hitpoints type="int">1</hitpoints>
+      <attack type="script">
+        this.temp_db = 0
+        this.temp_ob_now = 0
+        this.temp_ob_next = 0
+        this.temp_damage = 0
+        this.temp_desc = "You swing your"
+        do (this, "doattack")
+        DecreaseHealth (1)
+      </attack>
+    </object>
+    <exit name="CaVe" alias="north" to="m_cave">
+      <inherit name="northdirection" />
+      <locked />
+      <lockmessage>I can't go this way without a lightsource and a guide.</lockmessage>
+    </exit>
+  </object>
+  <object name="m_cave">
+    <inherit name="editor_room" />
+    <alias>Cave</alias>
+    <dark />
+    <darkroomdescription>It's too dark to see anything. Soft growls from within are all you hear.</darkroomdescription>
+    <attr name="grid_label">Cave</attr>
+    <exit name="CAve" alias="south" to="m_forest left">
+      <inherit name="southdirection" />
+      <locked />
+      <lockmessage>I cannot go without a torch and without Dovahi</lockmessage>
+      <runscript type="boolean">false</runscript>
+    </exit>
+    <object name="Serane">
+      <inherit name="editor_object" />
+      <inherit name="namedmale" />
+      <inherit name="talkingchar" />
+      <look>Huge dragon what's deep purple with blue accents. Even his eyes are azure.</look>
+      <animal type="boolean">false</animal>
+      <attack type="script">
+        msg ("\"You dare strike me?!\"")
+        MoveObject (Serane, Shop_Stockroom)
+        MoveObject (Serane_EVIL, m_cave)
+      </attack>
+      <object name="Serane_Hello">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Hello</alias>
+        <hideafter />
+        <talk type="script">
+          msg ("\"Hello?\"")
+          msg ("A deep voice growls. \"Greetings Hooman, I am Serane. Drop your weapons and torch and we may speak peacefully I see you have a brain hooman. Thank you for not attacking.\" There's russling in the dark and soft growls as the dragon settles. \"Why are you here human?\"")
+          msg ("Dovahi jumps onto the dragon.")
+          MoveObjectHere (Dovahi_EVIL)
+          LockExit (CAve)
+          MoveObject (Dovahi, Shop_Stockroom)
+          msg ("The two start to fight. Quick! Choose one or both to kill or they'll surely kill eachother!")
+          if (HasAttribute(Dovahi_EVIL, "dead")) {
+            UnlockExit (CAve)
+          }
+          else if (HasAttribute(Serane_EVIL, "dead")) {
+            UnlockExit (CaVe)
+          }
+          else {
+            LockExit (CaVe)
+          }
+          if (HasAttribute(Dovahi_EVIL, )) {
+            msg ("Thank you " + player.alias + "I owe you much. Thank you.")
+          }
+          else {
+            MakeObjectInvisible (Serane_Bye)
+          }
+        </talk>
+      </object>
+      <object name="Serane_Bye">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Bye</alias>
+        <talk type="script">
+          if (HasAttribute(Dovahi_EVIL, "dead")) {
+            msg ("Thank you " + player.alias + "I owe you much. Thank you.")
+          }
+          else {
+            MakeObjectInvisible (Serane_Bye)
+          }
+        </talk>
+      </object>
+    </object>
+  </object>
+  <object name="m_path">
+    <inherit name="editor_room" />
+    <alias>Crossroads</alias>
+    <attr name="grid_label">Crossroads</attr>
+    <exit alias="west" to="m_Forest">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="northeast" to="m_harbor">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="southeast" to="m_castletown">
+      <inherit name="southeastdirection" />
+    </exit>
+  </object>
+  <object name="m_harbor">
+    <inherit name="editor_room" />
+    <alias>Harbor</alias>
+    <attr name="grid_label">Harbor</attr>
+    <exit alias="southwest" to="m_path">
+      <inherit name="southwestdirection" />
+    </exit>
+    <object name="Dock Master">
+      <inherit name="editor_object" />
+      <inherit name="namedmale" />
+      <inherit name="talkingchar" />
+      <greet type="script">
+        msg ("\"Whadda what?\"")
+      </greet>
+      <object name="dockmaster_travel">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Safe Passage to the Sea</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          msg ("\"You want to go to the sea?\"")
+          if (GetBoolean(Dock Master, "red")) {
+            UnlockExit (Boat)
+            msg ("Get on the boat and we'll head off")
+          }
+          else {
+            msg ("\"Scram! Pest!\"")
+          }
+        </talk>
+      </object>
+    </object>
+    <exit name="Boat" alias="north" to="m_Sea of Monsters">
+      <inherit name="northdirection" />
+      <locked />
+    </exit>
+  </object>
+  <object name="m_castletown">
+    <inherit name="editor_room" />
+    <alias>Castletown</alias>
+    <attr name="grid_label">Town</attr>
+    <exit alias="northwest" to="m_path">
+      <inherit name="northwestdirection" />
+    </exit>
+    <exit alias="east" to="m_castle">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="Dovahi">
+      <inherit name="editor_object" />
+      <inherit name="namedfemale" />
+      <inherit name="talkingchar" />
+      <look>A woman build lean but powerful. She practices her archery against a large tree. She wears only black and hides most of her skin.</look>
+      <greet type="script">
+      </greet>
+      <object name="Dova_dragon">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Hunting?</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          if (GetBoolean(Dovahi, "purple")) {
+            if (Got(Torch)) {
+              msg ("\"Let's go to the cave then.\"")
+              SetObjectFlagOn (Dovahi, "Following")
+              UnlockExit (CaVe)
+            }
+            else {
+              msg ("\"You want to help me? Then go buy a torch for me and maybe get some weapons for yourself. We have a dragon to kill.\"")
+            }
+          }
+          else {
+            msg ("\"Get away from me!\"")
+          }
+        </talk>
+      </object>
+    </object>
+    <exit alias="south" to="m_Shop">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <object name="m_castle">
+    <inherit name="editor_room" />
+    <attr name="grid_label">Castle</attr>
+    <exit alias="west" to="m_castletown">
+      <inherit name="westdirection" />
+    </exit>
+    <object name="m_King">
+      <inherit name="editor_object" />
+      <inherit name="talkingchar" />
+      <inherit name="namedmale" />
+      <alias>King</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <greet type="script">
+      </greet>
+      <object name="King_Mermaid">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter />
+        <alias>Mermaid Hunting?</alias>
+        <talk type="script">
+          msg ("\"If you bring me back a mermaid, I'll give you coin in exchange. Talk to the dockmaster if you want to do it. If not just go, I don't need anyone here who dosen't work.\"")
+          SetObjectFlagOn (Dock Master, "red")
+        </talk>
+      </object>
+      <object name="King_Dragon">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Dragon Hunting?</alias>
+        <talk type="script">
+          msg ("\"You'd like to hunt a dragon for me? I'll pay you well and you can keep the carcass, so long as I get the head and scales.\"")
+          msg ("\"If you'd like, go speak to Dovahi. She hunted the dragon's mate many years ago when she was a young woman. Go to her. She may not be happy to see you at first but ask anyway.\"")
+          SetObjectFlagOn (Dovahi, "purple")
+        </talk>
+      </object>
+      <object name="King_Scales">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Scales</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          if (Got(Scales)) {
+            msg ("\"Thank you.Here's your gold traveler.\"")
+            player.gold = player.gold + 100
+          }
+          else {
+            MakeObjectInvisible (King_Scales)
+          }
+        </talk>
+      </object>
+    </object>
+  </object>
+  <object name="m_Sea of Monsters">
+    <inherit name="editor_room" />
+    <description>The beautiful sea. The waves crashing and curling against the boat like spines. It's beautiful.</description>
+    <attr name="grid_width" type="int">3</attr>
+    <attr name="grid_length" type="int">3</attr>
+    <attr name="grid_label">Sea of Monsters</attr>
+    <attr name="grid_fill">Aqua</attr>
+    <alias>Sea of Monsters</alias>
+    <exit alias="south" to="m_harbor">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="Scarlet">
+      <inherit name="editor_object" />
+      <inherit name="talkingchar" />
+      <inherit name="namedfemale" />
+      <look>A beautiful mermaid with silver hair, long as the sea is big. Her tail a deep ebony. Her eyes scarlet and beautiful in all ways.</look>
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+        <value>Attack</value>
+      </displayverbs>
+      <attack type="script">
+        msg ("\"DIE!\"")
+        MoveObject (Scarlet, f_InnStockroom)
+        MoveObject (Scarlet_EVIL, m_Sea of Monsters)
+      </attack>
+      <greet type="script">
+        msg ("The mermaid sits on the water and smiles at all the men. I don't know if I should harm her or speak to her.")
+      </greet>
+      <object name="Scarlet_Hello">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Hello?</alias>
+        <talk type="script">
+          msg ("\"Hello?\"")
+          msg ("The mermaid dives under the water and comes up, this time much closer. She smiles at me and purrs loud. She tilts her head and her tail gently waves.")
+          msg ("\"Hello.\"")
+          msg ("She grins and comes closer. She grabs the edge of my small boat. She leans up and kisses me. Then sits back and grins. \"Hello.\"")
+          msg ("The creature dives down and comes up a moment later.")
+          AddToInventory (Shell)
+          msg ("She give you a shell. \"Here you go~ It calls me.\"")
+        </talk>
+      </object>
+      <object name="Shell">
+        <inherit name="editor_object" />
+        <look>Beautiful shell that glows gently an ocean blue.</look>
+        <take />
+        <takemsg>She gives it to you.</takemsg>
+        <feature_usegive />
+        <price type="int">0</price>
+        <use type="script">
+          if (game.pov.parent = m_Sea of Monsters) {
+            MoveObject (Scarlet, m_Sea of Monsters)
+            msg ("Scarlets comes closer, the shell calls her.")
+          }
+          else {
+            msg ("You hear the calls of mermaids")
+          }
+        </use>
+      </object>
+    </object>
+  </object>
+  <object name="m_Shop">
+    <inherit name="editor_room" />
+    <inherit name="shop_location" />
+    <buys type="boolean">false</buys>
+    <alias>Shop</alias>
+    <attr name="grid_label">Shop</attr>
+    <shopstock type="object">Shop_Stockroom</shopstock>
+    <object name="Shop Keeper">
+      <inherit name="editor_object" />
+      <inherit name="talkingchar" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <greet type="script">
+        msg ("\"Hello!\"")
+      </greet>
+      <object name="Buy_Bow">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Buy Bow</alias>
+        <hideafter type="boolean">false</hideafter>
+        <talk type="script">
+          Ask ("\"I also have a bow. It's just something I found. 20 gold for it. Want it?\"") {
+            msg ("\"Here ya go!\"")
+            AddToInventory (Ebony Bow)
+            player.gold = player.gold + -20
+          }
+        </talk>
+      </object>
+      <object name="Buy_Torch">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Buy Torch</alias>
+        <talk type="script">
+          Ask ("\"I also have a torch. It's just something I found. 1 gold for it. Want it?\"") {
+            msg ("\"Here ya go!\"")
+            AddToInventory (Torch)
+            player.gold = player.gold + -1
+          }
+        </talk>
+      </object>
+      <object name="Buy_Dagger">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Buy Dagger</alias>
+        <talk type="script">
+          Ask ("\"I also have a dagger. It's just something I found. 5 gold for it. Want it?\"") {
+            msg ("\"Here ya go!\"")
+            AddToInventory (Ebony Dagger)
+            player.gold = player.gold + -5
+          }
+        </talk>
+      </object>
+    </object>
+    <exit alias="north" to="m_castletown">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="Shop_Stockroom">
+    <inherit name="editor_room" />
+    <object name="Ebony Bow">
+      <inherit name="editor_object" />
+      <inherit name="weapon" />
+      <inherit name="corruption_type" />
+      <price type="int">25</price>
+      <nonweapon />
+      <twohanded />
+    </object>
+    <object name="Ebony Dagger">
+      <inherit name="editor_object" />
+      <inherit name="weapon" />
+      <price type="int">5</price>
+    </object>
+    <object name="Torch">
+      <inherit name="editor_object" />
+      <inherit name="merchandise" />
+      <feature_lightdark />
+      <lightsource />
+      <price type="int">2</price>
+      <feature_usegive />
+      <lightstrength>strong</lightstrength>
+      <use type="script">
+        SetObjectLightstrength (Torch, "strong")
+      </use>
+    </object>
+  </object>
+  <object name="Serane_EVIL">
+    <inherit name="editor_object" />
+    <inherit name="monster" />
+    <inherit name="namedmale" />
+    <level type="int">10</level>
+    <attackonsight />
+    <alias>Serane</alias>
+    <look>HE'S MAD!</look>
+    <attack type="script">
+      this.temp_db = 0
+      this.temp_ob_now = 0
+      this.temp_ob_next = 0
+      this.temp_damage = 0
+      this.temp_desc = "You swing your"
+      do (this, "doattack")
+      DecreaseHealth (15)
+    </attack>
+  </object>
+  <object name="Dovahi_EVIL">
+    <inherit name="editor_object" />
+    <inherit name="monster" />
+    <inherit name="namedfemale" />
+    <level type="int">10</level>
+    <hitpoints type="int">7</hitpoints>
+    <alias>Dovahi</alias>
+    <attack type="script">
+      this.temp_db = 0
+      this.temp_ob_now = 0
+      this.temp_ob_next = 0
+      this.temp_damage = 0
+      this.temp_desc = "You swing your"
+      do (this, "doattack")
+      DecreaseHealth (8)
+    </attack>
+    <search type="script">
+      if (not this.dead) {
+        msg ("You can only search a monster once it is dead.")
+      }
+      else if (this.searched) {
+        msg ("You search it, but find nothing more.")
+      }
+      else {
+        this.searched = true
+        SearchBody (this)
+      }
+    </search>
+  </object>
+  <object name="Scarlet_EVIL">
+    <inherit name="editor_object" />
+    <inherit name="namedfemale" />
+    <inherit name="monster" />
+    <look>You gonna die.</look>
+    <alias>Scarlet</alias>
+    <drop type="boolean">false</drop>
+    <attackonsight />
+    <guarding />
+    <attack type="script">
+      this.temp_db = 0
+      this.temp_ob_now = 0
+      this.temp_ob_next = 0
+      this.temp_damage = 0
+      this.temp_desc = "You swing your"
+      do (this, "doattack")
+      DecreaseHealth (8)
+    </attack>
+    <search type="script">
+      if (not this.dead) {
+        msg ("You can only search a monster once it is dead.")
+      }
+      else if (this.searched) {
+        msg ("You search it, but find nothing more.")
+      }
+      else {
+        this.searched = true
+        SearchBody (this)
+        AddToInventory
+      }
+    </search>
+    <object name="Scales">
+      <inherit name="editor_object" />
+      <look>They glitter with blood and lose their color.</look>
+      <take />
+      <attr name="feature_usegive" type="boolean">false</attr>
+      <use type="boolean">false</use>
+    </object>
+  </object>
+  <object name="C_city_1">
+    <inherit name="editor_room" />
+    <alias>Outer City</alias>
+    <description>It's a gross city with little light. Buildings reach into the sky and block out the sun. It's almost perpetual darkness. Neon lights glow harshly.</description>
+    <attr name="grid_label">Outer City</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <object name="Body">
+      <inherit name="editor_object" />
+      <look>A body of a young woman. Her body limp and her eyes...missing... there's a glint of an object in her hand.</look>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <drop type="boolean">false</drop>
+      <search type="script">
+        AddToInventory (Knife)
+      </search>
+      <object name="Knife">
+        <inherit name="editor_object" />
+        <inherit name="weapon" />
+        <attackbonus type="int">0</attackbonus>
+        <damagebonus type="int">0</damagebonus>
+      </object>
+    </object>
+    <exit alias="west" to="C_downtown">
+      <inherit name="westdirection" />
+    </exit>
+  </object>
+  <object name="C_downtown">
+    <inherit name="editor_room" />
+    <attr name="grid_label">Downtown</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <alias>Downtown</alias>
+    <exit alias="east" to="C_city_1">
+      <inherit name="eastdirection" />
+    </exit>
+    <object name="Rose">
+      <inherit name="editor_object" />
+      <inherit name="namedfemale" />
+      <inherit name="talkingchar" />
+      <look type="script">
+        msg ("She looks at you and smiles, coming closer to you. She has black hair and steel blue eyes.")
+      </look>
+      <attack type="script">
+        MoveObject (Rose_EVIL, C_downtown)
+        MoveObject (Rose, Shop_Stockroom)
+      </attack>
+      <talk type="script">
+        msg ("She smiles and brings you closer as a strange man walks by. He growls and you notice his eyes are bright red with a gold halo around them. There is no white in his eyes.")
+      </talk>
+      <object name="rose_starting conversation">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Hello?</alias>
+        <talk type="script">
+          msg ("A friendly and beautiful woman walks beside you. \"Hello~\"")
+          Ask ("Say hello?") {
+            if (result) {
+              msg ("She smiles. \"You look interesting.\"")
+              msg ("\"Are you scared?\" Her eyes slip into a red haze. They're strange and nightmareish, but bright like a fire. She's a monster.")
+              msg ("Do you attack her and kill her or do you follow her to others like her?")
+              msg ("\"Meet me in the northern side of town. I'll be waiting for you strange one.\"")
+              MoveObject (Rose, Warehouse)
+              SetObjectFlagOn (Rose, "show")
+            }
+            else {
+              msg ("She walks with you in silence for a while")
+              msg ("\"Are you scared?\" Her eyes slip into a red haze. They're strange and nightmareish, but bright like a fire. She's a monster.")
+              msg ("Do you attack her and kill her or do you follow her to others like her?")
+              msg ("\"Meet me in the northern side of town. I'll be waiting for you strange one.\"")
+              MoveObject (Rose, Warehouse)
+              SetObjectFlagOn (Rose, "show")
+            }
+          }
+        </talk>
+      </object>
+      <object name="rose_mission">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Mission</alias>
+        <visible />
+        <talk type="script">
+          msg ("\"Glad you came little one. Let's go hunt the hunters~ Here's some good weapons. Get them all.\"")
+          AddToInventory (Dagger)
+          AddToInventory (Sword)
+          msg ("\"Let's go to Westside and get the hunters.\"")
+          MoveObject (Pack of Hunters, Westside)
+          MoveObject (Rose, Westside)
+        </talk>
+      </object>
+    </object>
+    <exit alias="west" to="C_Council_Gates">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="northwest" to="Warehouse">
+      <inherit name="northwestdirection" />
+    </exit>
+    <exit alias="southwest" to="Westside">
+      <inherit name="southwestdirection" />
+    </exit>
+    <object name="Pack of Hunters">
+      <inherit name="editor_object" />
+      <inherit name="maleplural" />
+      <inherit name="monster" />
+      <look>Many ghoul hunters armed to the teeth.</look>
+      <level type="int">2</level>
+      <hitpoints type="int">13</hitpoints>
+      <attackbonus type="int">1</attackbonus>
+      <damagedicenumber type="int">2</damagedicenumber>
+      <damagedicesides type="int">5</damagedicesides>
+      <search type="script">
+        if (not this.dead) {
+          msg ("You can only search a monster once it is dead.")
+        }
+        else if (this.searched) {
+          msg ("You search it, but find nothing more.")
+        }
+        else {
+          this.searched = true
+          SearchBody (this)
+        }
+        msg ("No one can ever win this fight between the two fractions.")
+        finish
+      </search>
+    </object>
+  </object>
+  <object name="Rose_EVIL">
+    <inherit name="editor_object" />
+    <inherit name="namedfemale" />
+    <inherit name="monster" />
+    <alias>Rose</alias>
+    <hurtbyweapon>She tears into you as if you are nothing.</hurtbyweapon>
+    <attackonsight />
+    <guarding type="boolean">false</guarding>
+    <hitpoints type="int">15</hitpoints>
+    <movetype>Free</movetype>
+    <search type="script">
+      if (not this.dead) {
+        msg ("You can only search a monster once it is dead.")
+      }
+      else if (this.searched) {
+        msg ("You search it, but find nothing more.")
+      }
+      else {
+        this.searched = true
+        SearchBody (this)
+      }
+      SetObjectFlagOn (Rose_EVIL, "dead")
+    </search>
+    <attack type="script">
+      this.temp_db = 0
+      this.temp_ob_now = 0
+      this.temp_ob_next = 0
+      this.temp_damage = 0
+      this.temp_desc = "You swing your"
+      do (this, "doattack")
+    </attack>
+  </object>
+  <object name="C_Council_Gates">
+    <inherit name="editor_room" />
+    <attr name="grid_label">Council Gates</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <alias>Council Gates</alias>
+    <usedefaultprefix />
+    <object name="Guards">
+      <inherit name="editor_object" />
+      <inherit name="talkingchar" />
+      <inherit name="maleplural" />
+      <object name="guards_whoareyou">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <hideafter type="boolean">false</hideafter>
+        <alias>Open Gate</alias>
+        <talk type="script"><![CDATA[
+          msg ("\"Why are you here?\"")
+          msg ("\"This person looks weird.\"<br/>\"Screen them for ghoul blood\"")
+          if (GetBoolean(Rose_EVIL, "dead")) {
+            msg ("\"Go on in.\"")
+            UnlockExit (Chamber)
+          }
+          else {
+            msg ("\"Scram pest.\"")
+          }
+        ]]></talk>
+      </object>
+    </object>
+    <exit alias="east" to="C_downtown">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit name="Chamber" alias="in" to="C_Council_Chamber">
+      <inherit name="indirection" />
+      <locked />
+    </exit>
+  </object>
+  <object name="C_Council_Chamber">
+    <inherit name="editor_room" />
+    <alias>Council Chamber</alias>
+    <attr name="grid_label">Council Chamber</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <object name="Chief_Counciler">
+      <inherit name="editor_object" />
+      <inherit name="talkingchar" />
+      <inherit name="namedmale" />
+      <alias>Chief Counciler</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <greet type="script">
+      </greet>
+      <object name="CC_speak">
+        <inherit name="editor_object" />
+        <inherit name="startingtopic" />
+        <alias>Ghouls</alias>
+        <talk type="script">
+          msg ("\"What do you want?\"")
+          Ask ("\"You've seen the ghouls? Did you kill one?\"") {
+            if (result) {
+              msg ("\"Good. Then I can help you. You can join a group under my command to kill the ghouls. Speak to Darel. He's the man who just walked in. Go speak to him.\"")
+              MoveObject (Darel, C_Council_Chamber)
+            }
+            else {
+              msg ("\"Then you must die.\"")
+              finish
+            }
+          }
+        </talk>
+      </object>
+    </object>
+    <exit alias="out" to="C_Council_Gates">
+      <inherit name="outdirection" />
+    </exit>
+  </object>
+  <object name="Darel">
+    <inherit name="editor_object" />
+    <inherit name="talkingchar" />
+    <inherit name="namedmale" />
+    <displayverbs type="stringlist">
+      <value>Speak to</value>
+    </displayverbs>
+    <object name="Darel_TeamGhoulKiller">
+      <inherit name="editor_object" />
+      <inherit name="startingtopic" />
+      <alias>Ghouls</alias>
+      <talk type="script">
+        msg ("\"So you had a run in with a ghoul and lived? Good. You'll be really good at this. Come on. We must train. Here's these.\"")
+        AddToInventory (Dagger)
+        AddToInventory (Sword)
+        msg ("\"We're going to Westside and killing the ghouls there.\"")
+        MoveObject (Darel, Westside)
+        MoveObject (Several Ghouls, Westside)
+      </talk>
+    </object>
+    <object name="Chest_Goodies">
+      <inherit name="editor_object" />
+      <alias>Chest</alias>
+      <look>Black box thats heavy.</look>
+      <take type="script">
+        AddToInventory (Dagger)
+        AddToInventory (Sword)
+      </take>
+      <object name="Sword">
+        <inherit name="editor_object" />
+        <inherit name="weapon" />
+        <twohanded />
+        <damagedicesides type="int">5</damagedicesides>
+        <damagedicenumber type="int">3</damagedicenumber>
+        <attackbonus type="int">3</attackbonus>
+      </object>
+      <object name="Dagger">
+        <inherit name="editor_object" />
+        <inherit name="weapon" />
+        <attackbonus type="int">1</attackbonus>
+        <damagedicenumber type="int">2</damagedicenumber>
+        <damagedicesides type="int">4</damagedicesides>
+      </object>
+    </object>
+    <object name="Several Ghouls">
+      <inherit name="editor_object" />
+      <inherit name="maleplural" />
+      <inherit name="monster" />
+      <look>Many Ghouls that are armed and ready for you to fight.</look>
+      <level type="int">2</level>
+      <hitpoints type="int">12</hitpoints>
+      <armour type="int">0</armour>
+      <attackbonus type="int">1</attackbonus>
+      <damagedicenumber type="int">2</damagedicenumber>
+      <search type="script">
+        if (not this.dead) {
+          msg ("You can only search a monster once it is dead.")
+        }
+        else if (this.searched) {
+          msg ("You search it, but find nothing more.")
+        }
+        else {
+          this.searched = true
+          SearchBody (this)
+        }
+        msg ("No one can win in thsis race vs race fight.")
+        finish
+      </search>
+    </object>
+  </object>
+  <object name="Warehouse">
+    <inherit name="editor_room" />
+    <attr name="grid_label">Warehouse</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <exit alias="southeast" to="C_downtown">
+      <inherit name="southeastdirection" />
+    </exit>
+  </object>
+  <object name="Westside">
+    <inherit name="editor_room" />
+    <attr name="grid_label">Westside</attr>
+    <attr name="grid_fill">Black</attr>
+    <attr name="grid_border">WhiteSmoke</attr>
+    <exit alias="northeast" to="C_downtown">
+      <inherit name="northeastdirection" />
+    </exit>
+  </object>
+  <function name="PointsLeft" type="int">
+    return (game.pov.maxpoints - TotalAttributes())
+  </function>
+  <function name="CalcFullHits" type="int">
+    return (20 + 5 * game.pov.stamina)
+  </function>
+  <function name="InitStatusAttributes">
+    if (game.showscore) {
+      game.score = 0
+      if (game.statusattributes = null) {
+        game.statusattributes = NewStringDictionary()
+      }
+      dictionary add (game.statusattributes, "score", "Score: !")
+    }
+    if (game.showhealth) {
+      if (game.povstatusattributes = null) {
+        game.povstatusattributes = NewStringDictionary()
+      }
+      dictionary add (game.povstatusattributes, "health", "Health: !%")
+    }
+  </function>
+  <function name="SearchBody" parameters="m">
+    gc = 0
+    for (i, 0, m.level * m.level) {
+      gc = GetRandomInt (0, 5) + gc
+    }
+    msg ("You find " + GetPrice(gc) + " (gold peices) on the body.")
+    game.pov.gold = game.pov.gold + gc
+    l = GetDirectChildren (m)
+    if (not ListCount (l) = 0) {
+      msg (FormatObjectList("You can also see", m, "and", " on the body."))
+      foreach (o, l) {
+        o.parent = m.parent
+      }
+    }
+  </function>
+</asl>
