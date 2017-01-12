@@ -16,7 +16,7 @@
     <feature_limitinventory />
     <feature_lightdark />
     <attr name="feature_asktell" type="boolean">false</attr>
-    <author>Trynidy Williams</author>
+    <author>Trynidy Williams3</author>
     <autodescription type="boolean">false</autodescription>
     <setcustomwidth type="boolean">false</setcustomwidth>
     <changeroom_newline />
